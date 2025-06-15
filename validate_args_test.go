@@ -96,7 +96,7 @@ func TestValidateArgs(t *testing.T) {
 
 		// Error cases
 		{
-			name:        "no input - empty args and no stdin",
+			name:        "no args - empty args and no stdin",
 			args:        []string{},
 			stdinData:   "",
 			expectError: true,
