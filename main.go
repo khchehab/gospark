@@ -37,12 +37,15 @@ func main() {
 		Long: `Generate sparkline charts from numeric data provided as command line arguments or piped args.
 Sparklines are small, word-sized graphics that show data trends without axes or coordinates.
 
+Numbers can be separated by any space character, comma or pipe (|).
+
 Sparklines can be colored (background and foreground) with a list of predefined color names:
 black, red, green, yellow, blue, magenta, cyan and white.`,
 		Version: Version,
-		Example: `  spark 1 5 22 13 53       => ▁▁▃▂█
-  spark 0,30,55,80,33,150  => ▁▂▃▄▂█
-  echo 9 13 5 17 1 | spark => ▄▆▂█▁`,
+		Example: `  spark 1 5 22 13 53         => ▁▁▃▂█
+  spark 0,30,55,80,33,150    => ▁▂▃▄▂█
+  echo "9 13 5 17 1" | spark => ▄▆▂█▁
+  spark "1|2|3|4|5"          => ▁▂▄▆█`,
 		RunE: func(_ *cobra.Command, args []string) error {
 			if err := validateColor(bgColor); err != nil {
 				return err
