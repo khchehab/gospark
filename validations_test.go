@@ -1,4 +1,4 @@
-package main
+package spark
 
 import (
 	"log"
@@ -40,6 +40,26 @@ func TestValidateArgs(t *testing.T) {
 			name:     "args only - mixed integers and floats",
 			args:     []string{"1", "2.5", "3"},
 			expected: []int{1, 2, 3},
+		},
+		{
+			name:     "args only - comma separated in single arg",
+			args:     []string{"1,2,3", "4,5"},
+			expected: []int{1, 2, 3, 4, 5},
+		},
+		{
+			name:     "args only - pipe separated in single arg",
+			args:     []string{"1|2|3", "4|5"},
+			expected: []int{1, 2, 3, 4, 5},
+		},
+		{
+			name:     "args only - mix separators in single arg",
+			args:     []string{"1|2 3|4,5"},
+			expected: []int{1, 2, 3, 4, 5},
+		},
+		{
+			name:     "args only - semi-colon separated in single arg",
+			args:     []string{"1;2;3;4;5"},
+			expected: []int{1, 2, 3, 4, 5},
 		},
 
 		// Stdin only scenarios
@@ -186,7 +206,7 @@ func TestValidateArgs(t *testing.T) {
 				file = os.Stdin
 			}
 
-			result, err := validateArgs(tt.args, file)
+			result, err := ValidateArgs(tt.args, file)
 
 			if tt.expectError {
 				if err == nil {
@@ -211,7 +231,6 @@ func TestValidateArgs(t *testing.T) {
 	}
 }
 
-// Helper function to check if two int slices are equal
 func sliceEqual(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
@@ -224,7 +243,6 @@ func sliceEqual(a, b []int) bool {
 	return true
 }
 
-// Helper function to check if string contains substring
 func contains(s, substr string) bool {
 	for i := 0; i <= len(s)-len(substr); i++ {
 		if s[i:i+len(substr)] == substr {
@@ -232,4 +250,131 @@ func contains(s, substr string) bool {
 		}
 	}
 	return false
+}
+
+func TestValidateColor(t *testing.T) {
+	tests := []struct {
+		name        string
+		color       string
+		expectError bool
+		errorMsg    string
+	}{
+		// Valid colors
+		{
+			name:        "empty color should be valid",
+			color:       "",
+			expectError: false,
+		},
+		{
+			name:        "black color should be valid",
+			color:       "black",
+			expectError: false,
+		},
+		{
+			name:        "red color should be valid",
+			color:       "red",
+			expectError: false,
+		},
+		{
+			name:        "green color should be valid",
+			color:       "green",
+			expectError: false,
+		},
+		{
+			name:        "yellow color should be valid",
+			color:       "yellow",
+			expectError: false,
+		},
+		{
+			name:        "blue color should be valid",
+			color:       "blue",
+			expectError: false,
+		},
+		{
+			name:        "magenta color should be valid",
+			color:       "magenta",
+			expectError: false,
+		},
+		{
+			name:        "cyan color should be valid",
+			color:       "cyan",
+			expectError: false,
+		},
+		{
+			name:        "white color should be valid",
+			color:       "white",
+			expectError: false,
+		},
+
+		// Invalid colors
+		{
+			name:        "invalid color should return error",
+			color:       "invalid",
+			expectError: true,
+			errorMsg:    "invalid color: invalid",
+		},
+		{
+			name:        "purple color should be invalid",
+			color:       "purple",
+			expectError: true,
+			errorMsg:    "invalid color: purple",
+		},
+		{
+			name:        "orange color should be invalid",
+			color:       "orange",
+			expectError: true,
+			errorMsg:    "invalid color: orange",
+		},
+		{
+			name:        "mixed case should be invalid",
+			color:       "Red",
+			expectError: true,
+			errorMsg:    "invalid color: Red",
+		},
+		{
+			name:        "uppercase should be invalid",
+			color:       "BLUE",
+			expectError: true,
+			errorMsg:    "invalid color: BLUE",
+		},
+		{
+			name:        "numeric string should be invalid",
+			color:       "123",
+			expectError: true,
+			errorMsg:    "invalid color: 123",
+		},
+		{
+			name:        "color with spaces should be invalid",
+			color:       "light blue",
+			expectError: true,
+			errorMsg:    "invalid color: light blue",
+		},
+		{
+			name:        "color with special characters should be invalid",
+			color:       "red!",
+			expectError: true,
+			errorMsg:    "invalid color: red!",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateColor(tt.color)
+
+			if tt.expectError {
+				if err == nil {
+					t.Errorf("expected error but got none")
+					return
+				}
+				if tt.errorMsg != "" && err.Error() != tt.errorMsg {
+					t.Errorf("expected error message '%s', got '%s'", tt.errorMsg, err.Error())
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
+	}
 }
