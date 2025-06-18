@@ -218,3 +218,130 @@ func TestSparkCombined(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkSparkWithoutColors(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "",
+			FgColor:   "",
+			ShowSum:   false,
+			ShowStats: false,
+		})
+	}
+}
+
+func BenchmarkSparkWithBackground(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "red",
+			FgColor:   "",
+			ShowSum:   false,
+			ShowStats: false,
+		})
+	}
+}
+
+func BenchmarkSparkWithForeground(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "red",
+			FgColor:   "blue",
+			ShowSum:   false,
+			ShowStats: false,
+		})
+	}
+}
+
+func BenchmarkSparkWithBackgroundAndForeground(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "red",
+			FgColor:   "blue",
+			ShowSum:   false,
+			ShowStats: false,
+		})
+	}
+}
+
+func BenchmarkSparkWithSum(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "",
+			FgColor:   "",
+			ShowSum:   true,
+			ShowStats: false,
+		})
+	}
+}
+
+func BenchmarkSparkWithStats(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "",
+			FgColor:   "",
+			ShowSum:   false,
+			ShowStats: true,
+		})
+	}
+}
+
+func BenchmarkSparkWithSumAndStats(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "",
+			FgColor:   "",
+			ShowSum:   true,
+			ShowStats: true,
+		})
+	}
+}
+
+func BenchmarkSparkWithReverse(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "",
+			FgColor:   "",
+			ShowSum:   false,
+			ShowStats: false,
+			Reverse:   true,
+		})
+	}
+}
+
+func BenchmarkSparkWithVertical(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "",
+			FgColor:   "",
+			ShowSum:   false,
+			ShowStats: false,
+			Vertical:  true,
+		})
+	}
+}
+
+func BenchmarkSparkWithReverseAndVertical(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "",
+			FgColor:   "",
+			ShowSum:   false,
+			ShowStats: false,
+			Reverse:   true,
+			Vertical:  true,
+		})
+	}
+}
+
+func BenchmarkSparkWithAllFeatures(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Spark([]int{1, 5, 22, 13, 5}, &Config{
+			BgColor:   "blue",
+			FgColor:   "red",
+			ShowSum:   true,
+			ShowStats: true,
+			Reverse:   true,
+			Vertical:  true,
+		})
+	}
+}
