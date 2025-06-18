@@ -51,10 +51,10 @@ func getStats(data []int) (int, int, int, float64, error) {
 			maximum = data[i]
 		}
 		// Check for overflow before adding
-		if sum > 0 && data[i] > 0 && sum > math.MaxInt64-data[i] {
+		if sum > 0 && data[i] > 0 && sum > math.MaxInt-data[i] {
 			return 0, 0, 0, 0, fmt.Errorf("numbers are too large, sum would overflow")
 		}
-		if sum < 0 && data[i] < 0 && sum < math.MinInt64-data[i] {
+		if sum < 0 && data[i] < 0 && sum < math.MinInt-data[i] {
 			return 0, 0, 0, 0, fmt.Errorf("numbers are too large, sum would underflow")
 		}
 		sum += data[i]
