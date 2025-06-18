@@ -120,27 +120,27 @@ func TestValidateArgs(t *testing.T) {
 			args:        []string{},
 			stdinData:   "",
 			expectError: true,
-			errorMsg:    "requires at least 1 argument",
+			errorMsg:    "no numeric data provided - specify numbers as arguments or pipe data via stdin",
 		},
 		{
 			name:        "invalid number in args",
 			args:        []string{"1", "abc", "3"},
 			expectError: true,
-			errorMsg:    "abc is not a number",
+			errorMsg:    "invalid number: abc",
 		},
 		{
 			name:        "invalid number in stdin",
 			args:        []string{},
 			stdinData:   "1 xyz 3",
 			expectError: true,
-			errorMsg:    "xyz is not a number",
+			errorMsg:    "invalid number: xyz",
 		},
 		{
 			name:        "only whitespace in stdin",
 			args:        []string{},
 			stdinData:   "   \n   \n",
 			expectError: true,
-			errorMsg:    "requires at least 1 argument",
+			errorMsg:    "no numeric data provided - specify numbers as arguments or pipe data via stdin",
 		},
 
 		// Edge cases

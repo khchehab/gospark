@@ -1,12 +1,10 @@
 package spark
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	"slices"
 	"strconv"
 	"strings"
-	"unicode"
 )
 
 func Spark(data []int, config *Config) string {
@@ -16,7 +14,7 @@ func Spark(data []int, config *Config) string {
 
 	minimum, maximum, sum, average := getStats(data)
 
-	ticks, _ := getTicks(minimum == maximum, config)
+	ticks, separator := getTicks(minimum == maximum, config)
 
 	divisor := float64(maximum - minimum)
 	factor := len(ticks) - 1
@@ -30,49 +28,11 @@ func Spark(data []int, config *Config) string {
 		}
 	}
 
-	return concatenateParts(sparklines, minimum, maximum, sum, average, config)
-}
-
-func ValidateArgs(args []string, file *os.File) ([]int, error) {
-	hasArgs := len(args) > 0
-
-	stat, _ := file.Stat()
-	hasFileData := (stat.Mode() & os.ModeCharDevice) == 0
-
-	var source []string
-	if hasArgs {
-		source = args
-	} else if hasFileData {
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			source = append(source, scanner.Text())
-		}
+	if config.Reverse {
+		slices.Reverse(sparklines)
 	}
 
-	var flattened []string
-	for _, s := range source {
-		flattened = append(flattened, strings.FieldsFunc(s, isSeparator)...)
-	}
-
-	if len(flattened) < 1 {
-		return nil, fmt.Errorf("requires at least 1 argument")
-	}
-
-	data := make([]int, 0, len(flattened))
-	for _, n := range flattened {
-		f, err := strconv.ParseFloat(n, 64)
-		if err != nil {
-			return nil, fmt.Errorf("%s is not a number", n)
-		}
-
-		data = append(data, int(f))
-	}
-
-	return data, nil
-}
-
-func isSeparator(r rune) bool {
-	return unicode.IsSpace(r) || r == ',' || r == '|' || r == ';'
+	return concatenateParts(sparklines, minimum, maximum, sum, average, separator, config)
 }
 
 func getStats(data []int) (int, int, int, float64) {
@@ -95,13 +55,23 @@ func getStats(data []int) (int, int, int, float64) {
 }
 
 func getTicks(sameMinMax bool, config *Config) ([]rune, string) {
+	var pool [8]rune
+	var separator string
+	if config.Vertical {
+		pool = [8]rune{'▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'}
+		separator = "\n"
+	} else {
+		pool = [8]rune{'▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'}
+		separator = ""
+	}
+
 	var ticks []rune
 	if sameMinMax {
-		ticks = []rune{'▅', '▆'}
+		ticks = pool[4:6]
 	} else {
-		ticks = []rune{'▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'}
+		ticks = pool[:]
 	}
-	return ticks, ""
+	return ticks, separator
 }
 
 func getPrefixAndSuffix(config *Config) (string, string) {
@@ -127,13 +97,15 @@ func getPrefixAndSuffix(config *Config) (string, string) {
 	return prefix, suffix
 }
 
-func concatenateParts(sparklines []rune, minimum, maximum, sum int, average float64, config *Config) string {
+func concatenateParts(sparklines []rune, minimum, maximum, sum int, average float64, separator string, config *Config) string {
 	var parts []string
 
 	prefix, suffix := getPrefixAndSuffix(config)
-	parts = append(parts, prefix)
-	parts = append(parts, string(sparklines))
-	parts = append(parts, suffix)
+	finalSparklines := make([]string, len(sparklines))
+	for i, r := range sparklines {
+		finalSparklines[i] = fmt.Sprintf("%s%c%s", prefix, r, suffix)
+	}
+	parts = append(parts, strings.Join(finalSparklines, separator))
 
 	if config.ShowSum || config.ShowStats {
 		parts = append(parts, " (")

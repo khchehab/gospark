@@ -5,6 +5,8 @@ type Config struct {
 	FgColor   string
 	ShowSum   bool
 	ShowStats bool
+	Reverse   bool
+	Vertical  bool
 }
 
 func (c *Config) Validate() error {
