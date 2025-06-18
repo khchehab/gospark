@@ -152,7 +152,11 @@ func TestSpark(t *testing.T) {
 				ShowSum:   tc.showSum,
 				ShowStats: tc.showStats,
 			}
-			actual := Spark(tc.args, config)
+			actual, err := Spark(tc.args, config)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+				return
+			}
 
 			if actual != tc.expected {
 				t.Errorf("got '%s', want '%s'", actual, tc.expected)
@@ -171,7 +175,11 @@ func TestSparkReverse(t *testing.T) {
 				ShowStats: tc.showStats,
 				Reverse:   tc.reverse,
 			}
-			actual := Spark(tc.args, config)
+			actual, err := Spark(tc.args, config)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+				return
+			}
 
 			if actual != tc.expected {
 				t.Errorf("got '%s', want '%s'", actual, tc.expected)
@@ -190,7 +198,11 @@ func TestSparkVertical(t *testing.T) {
 				ShowStats: tc.showStats,
 				Vertical:  tc.vertical,
 			}
-			actual := Spark(tc.args, config)
+			actual, err := Spark(tc.args, config)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+				return
+			}
 
 			if actual != tc.expected {
 				t.Errorf("got '%s', want '%s'", actual, tc.expected)
@@ -210,7 +222,11 @@ func TestSparkCombined(t *testing.T) {
 				Reverse:   tc.reverse,
 				Vertical:  tc.vertical,
 			}
-			actual := Spark(tc.args, config)
+			actual, err := Spark(tc.args, config)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+				return
+			}
 
 			if actual != tc.expected {
 				t.Errorf("got '%s', want '%s'", actual, tc.expected)
@@ -221,7 +237,7 @@ func TestSparkCombined(t *testing.T) {
 
 func BenchmarkSparkWithoutColors(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		_, _ = Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "",
 			FgColor:   "",
 			ShowSum:   false,
@@ -232,7 +248,7 @@ func BenchmarkSparkWithoutColors(b *testing.B) {
 
 func BenchmarkSparkWithBackground(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		_, _ = Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "red",
 			FgColor:   "",
 			ShowSum:   false,
@@ -243,86 +259,93 @@ func BenchmarkSparkWithBackground(b *testing.B) {
 
 func BenchmarkSparkWithForeground(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "red",
 			FgColor:   "blue",
 			ShowSum:   false,
 			ShowStats: false,
 		})
+		_ = result
 	}
 }
 
 func BenchmarkSparkWithBackgroundAndForeground(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "red",
 			FgColor:   "blue",
 			ShowSum:   false,
 			ShowStats: false,
 		})
+		_ = result
 	}
 }
 
 func BenchmarkSparkWithSum(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "",
 			FgColor:   "",
 			ShowSum:   true,
 			ShowStats: false,
 		})
+		_ = result
 	}
 }
 
 func BenchmarkSparkWithStats(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "",
 			FgColor:   "",
 			ShowSum:   false,
 			ShowStats: true,
 		})
+		_ = result
 	}
 }
 
 func BenchmarkSparkWithSumAndStats(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "",
 			FgColor:   "",
 			ShowSum:   true,
 			ShowStats: true,
 		})
+		_ = result
 	}
 }
 
 func BenchmarkSparkWithReverse(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "",
 			FgColor:   "",
 			ShowSum:   false,
 			ShowStats: false,
 			Reverse:   true,
 		})
+		_ = result
 	}
 }
 
 func BenchmarkSparkWithVertical(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "",
 			FgColor:   "",
 			ShowSum:   false,
 			ShowStats: false,
 			Vertical:  true,
 		})
+		_ = result
 	}
 }
 
 func BenchmarkSparkWithReverseAndVertical(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "",
 			FgColor:   "",
 			ShowSum:   false,
@@ -330,12 +353,13 @@ func BenchmarkSparkWithReverseAndVertical(b *testing.B) {
 			Reverse:   true,
 			Vertical:  true,
 		})
+		_ = result
 	}
 }
 
 func BenchmarkSparkWithAllFeatures(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Spark([]int{1, 5, 22, 13, 5}, &Config{
+		result, _ := Spark([]int{1, 5, 22, 13, 5}, &Config{
 			BgColor:   "blue",
 			FgColor:   "red",
 			ShowSum:   true,
@@ -343,5 +367,6 @@ func BenchmarkSparkWithAllFeatures(b *testing.B) {
 			Reverse:   true,
 			Vertical:  true,
 		})
+		_ = result
 	}
 }

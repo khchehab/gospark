@@ -2,17 +2,21 @@ package spark
 
 import (
 	"fmt"
+	"math"
 	"slices"
 	"strconv"
 	"strings"
 )
 
-func Spark(data []int, config *Config) string {
+func Spark(data []int, config *Config) (string, error) {
 	if len(data) == 0 {
-		return ""
+		return "", nil
 	}
 
-	minimum, maximum, sum, average := getStats(data)
+	minimum, maximum, sum, average, err := getStats(data)
+	if err != nil {
+		return "", err
+	}
 
 	ticks, separator := getTicks(minimum == maximum, config)
 
@@ -32,10 +36,10 @@ func Spark(data []int, config *Config) string {
 		slices.Reverse(sparklines)
 	}
 
-	return concatenateParts(sparklines, minimum, maximum, sum, average, separator, config)
+	return concatenateParts(sparklines, minimum, maximum, sum, average, separator, config), nil
 }
 
-func getStats(data []int) (int, int, int, float64) {
+func getStats(data []int) (int, int, int, float64, error) {
 	minimum, maximum := data[0], data[0]
 	sum := data[0]
 
@@ -46,12 +50,19 @@ func getStats(data []int) (int, int, int, float64) {
 		if data[i] > maximum {
 			maximum = data[i]
 		}
+		// Check for overflow before adding
+		if sum > 0 && data[i] > 0 && sum > math.MaxInt64-data[i] {
+			return 0, 0, 0, 0, fmt.Errorf("numbers are too large, sum would overflow")
+		}
+		if sum < 0 && data[i] < 0 && sum < math.MinInt64-data[i] {
+			return 0, 0, 0, 0, fmt.Errorf("numbers are too large, sum would underflow")
+		}
 		sum += data[i]
 	}
 
 	average := float64(sum) / float64(len(data))
 
-	return minimum, maximum, sum, average
+	return minimum, maximum, sum, average, nil
 }
 
 func getTicks(sameMinMax bool, config *Config) ([]rune, string) {

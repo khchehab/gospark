@@ -3,6 +3,7 @@ package spark
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -43,6 +44,20 @@ func parseSource(source []string) ([]int, error) {
 		f, err := strconv.ParseFloat(n, 64)
 		if err != nil {
 			return nil, fmt.Errorf("invalid number: %s", n)
+		}
+
+		// check bounds
+		if math.IsInf(f, 0) {
+			return nil, fmt.Errorf("infinite numbers not supported: %s", n)
+		}
+		if math.IsNaN(f) {
+			return nil, fmt.Errorf("NaN (not a number) not supported: %s", n)
+		}
+		if f > math.MaxInt64 {
+			return nil, fmt.Errorf("number is too large: %s", n)
+		}
+		if f < math.MinInt64 {
+			return nil, fmt.Errorf("number is too short: %s", n)
 		}
 
 		data = append(data, int(f))

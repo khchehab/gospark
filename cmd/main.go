@@ -42,7 +42,10 @@ black, red, green, yellow, blue, magenta, cyan and white.`,
 				return err
 			}
 
-			sparks := spark.Spark(data, config)
+			sparks, err := spark.Spark(data, config)
+			if err != nil {
+				return err
+			}
 			fmt.Println(sparks)
 
 			return nil
